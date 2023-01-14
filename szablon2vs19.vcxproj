@@ -22,6 +22,7 @@
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Road.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Vehicle.cpp" />
   </ItemGroup>
@@ -30,10 +31,13 @@
     <Image Include="background_stripe.bmp" />
     <Image Include="cs8x8.bmp" />
     <Image Include="road.bmp" />
+    <Image Include="roadside.bmp" />
+    <Image Include="tree.bmp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Display.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Road.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Vehicle.h" />
   </ItemGroup>

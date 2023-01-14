@@ -5,6 +5,11 @@ extern "C" {
 #include"./SDL2-2.0.10/include/SDL_main.h"
 }
 
+#define SCREEN_WIDTH	960
+#define SCREEN_HEIGHT	540
+#define FONT_HEIGHT 8
+#define FONT_WIDTH 8
+
 class Display
 {
 	public:

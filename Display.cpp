@@ -6,9 +6,6 @@ extern "C" {
 #include"./SDL2-2.0.10/include/SDL_main.h"
 }
 
-#define SCREEN_WIDTH	960
-#define SCREEN_HEIGHT	540
-
 Display::Display()
 {
 	screen_width = SCREEN_WIDTH;
@@ -72,20 +69,20 @@ void Display::Draw()
 void Display::DrawString(int x, int y, const char* text) {
 	int px, py, c;
 	SDL_Rect s, d;
-	s.w = 8;
-	s.h = 8;
-	d.w = 8;
-	d.h = 8;
+	s.w = FONT_WIDTH;
+	s.h = FONT_HEIGHT;
+	d.w = FONT_WIDTH;
+	d.h = FONT_HEIGHT;
 	while (*text) {
 		c = *text & 255;
-		px = (c % 16) * 8;
-		py = (c / 16) * 8;
+		px = (c % 16) * FONT_WIDTH;
+		py = (c / 16) * FONT_HEIGHT;
 		s.x = px;
 		s.y = py;
 		d.x = x;
 		d.y = y;
 		SDL_BlitSurface(charset, &s, screen, &d);
-		x += 8;
+		x += FONT_WIDTH;
 		text++;
 	};
 };
