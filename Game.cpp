@@ -48,10 +48,6 @@ Game::~Game()
 
 void Game::NewGame()
 {
-	for (int i = 0; i < SPRITES_COUNT; i++)
-	{
-		sprites[i] = NULL;
-	}
 
 	for (int i = 0; i < BACKGROUND_STRIPES_COUNT; i++)
 	{
@@ -89,7 +85,6 @@ void Game::NewGame()
 	duration = 0;
 	score = 0;
 	player = Vehicle(&display);
-	sprites[0] = &player;
 }
 
 int Game::Run()
@@ -213,13 +208,8 @@ void::Game::DrawSprites() {
 	{
 		trees[i]->Draw();
 	}
-	for (int i = 0; i < SPRITES_COUNT; i++)
-	{
-		if (sprites[i] != NULL)
-		{
-			sprites[i]->Draw();
-		}
-	}
+
+	player.Draw();
 }
 
 void Game::MoveBackground(double time_delta)

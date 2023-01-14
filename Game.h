@@ -12,7 +12,6 @@ extern "C" {
 #define BACKGROUND_STRIPES_COUNT 8
 #define BACKGROUND_STRIPES_HEIGHT 90
 #define BACKGROUND_STRIPE_OFFSET 5
-#define SPRITES_COUNT 20
 #define ROADS_COUNT 12
 #define ROAD_OFFSET 10
 #define ROADSIDE_WIDTH 80
@@ -34,7 +33,6 @@ class Game
 		SDL_Event event;
 		bool quit;
 		const Uint8* keystates;
-		Sprite* sprites[SPRITES_COUNT];
 		Sprite* background_sprites[BACKGROUND_STRIPES_COUNT];
 		Sprite* roadsides[ROADS_COUNT * 2];
 		Sprite* trees[TREES_COUNT];
