@@ -38,3 +38,10 @@ void Vehicle::HandleMovement(double time_delta)
 
 	y = display->screen_height / 2 - y_offset + (DEFAULT_Y_OFFSET / 2);
 }
+
+void Vehicle::Reset()
+{
+	x = display->screen_width / 2 - surface->w / 2;
+	y = display->screen_height / 2 - surface->h / 2;
+	y_velocity_factor = DEFAULT_Y_VELOCITY_FACTOR;
+}

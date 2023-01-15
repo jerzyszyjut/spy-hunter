@@ -28,13 +28,11 @@ enum acceleration_direction {
 class Vehicle: public Sprite
 {
 	public:
-		double x_velocity, y_velocity;
+		double x_velocity, y_velocity, y_velocity_factor;
 		int direction, acceleration;
 		
 		Vehicle(Display*);
 		void HandleMovement(double);
-		
-	private:
-		double y_velocity_factor;
+		void Reset();
 };
 

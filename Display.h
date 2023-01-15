@@ -7,6 +7,9 @@ extern "C" {
 
 #define SCREEN_WIDTH	960
 #define SCREEN_HEIGHT	540
+
+#define WINDOW_TITLE "PoP Projekt 2, Jerzy Szyjut 193064"
+
 #define FONT_HEIGHT 8
 #define FONT_WIDTH 8
 

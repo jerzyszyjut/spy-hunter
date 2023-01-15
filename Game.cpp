@@ -14,11 +14,8 @@ extern "C" {
 #include"./SDL2-2.0.10/include/SDL_main.h"
 }
 
-Game::Game() : display(Display()), player(Vehicle(&display)), score(0)
+Game::Game() : display(Display()), player(Vehicle(&display)), score(0), quit(false), paused(false), keystates(SDL_GetKeyboardState(NULL))
 {
-	quit = false;
-	keystates = SDL_GetKeyboardState(NULL);
-
 	for (int i = 0; i < BACKGROUND_STRIPES_COUNT; i++)
 	{
 		background_sprites[i] = NULL;
@@ -112,16 +109,40 @@ void Game::NewGame()
 
 	duration = 0;
 	score = 0;
+	player.Reset();
+}
+
+void Game::Pause(double* time_delta)
+{
+	if (paused) {
+		char buffer[50];
+		sprintf(buffer, "PAUSED (press p to unpause)");
+		*time_delta = 0;
+		int start_x = display.screen_width / 2 - (strlen(buffer) * FONT_WIDTH) / 2 - PAUSE_BOX_PADDING;
+		int start_y = display.screen_height / 2 - (PAUSE_BOX_HEIGHT * FONT_HEIGHT) / 2 - PAUSE_BOX_PADDING;
+		int width = strlen(buffer) * FONT_WIDTH + 2 * PAUSE_BOX_PADDING;
+		int height = PAUSE_BOX_HEIGHT * FONT_HEIGHT + 2 * PAUSE_BOX_PADDING;
+		display.DrawRectangle(start_x, start_y, width, height, display.RED, display.BLUE);
+		display.DrawString(start_x + PAUSE_BOX_PADDING, start_y + PAUSE_BOX_PADDING, buffer);
+	}
 }
 
 int Game::Run()
 {
-	double t1=SDL_GetTicks(), t2=0;
+	double t1=SDL_GetTicks(), t2=0, time_delta=0;
 	SDL_Event current_event;
 	
 	while (!quit) {
 		t2 = SDL_GetTicks();
-		double time_delta = (t2 - t1) / 1000;
+		
+		time_delta = (t2 - t1) / 1000;
+
+		DrawSprites();
+		DrawScoreboard();
+		DrawFullfilledRequirements();
+		DrawLegend();
+		Pause(&time_delta);
+		
 		duration += time_delta;
 		t1 = t2;
 
@@ -132,11 +153,6 @@ int Game::Run()
 		
 		CountPoints(time_delta);
 		CheckCollisions();
-		
-		DrawSprites();
-		DrawScoreboard();
-		DrawFullfilledRequirements();
-		DrawLegend();
 
 		MoveBackground(time_delta);
 		display.Draw();
@@ -148,6 +164,10 @@ void Game::HandleInput(Vehicle* player, SDL_Event* current_event)
 {
 	if (current_event->type == SDL_QUIT || current_event->key.keysym.sym == SDLK_ESCAPE) {
 		quit = true;
+	}
+
+	if (current_event->type == SDL_KEYDOWN && current_event->key.keysym.sym == SDLK_p) {
+		paused = !paused;
 	}
 
 	if (current_event->type == SDL_KEYDOWN && current_event->key.keysym.sym == SDLK_n) {
@@ -206,6 +226,7 @@ void Game::DrawLegend()
 	display.DrawString(start_x + LEGEND_PADDING, display.screen_height - FONT_HEIGHT * line--, "\30/\31 - speed up/down");
 	display.DrawString(start_x + LEGEND_PADDING, display.screen_height - FONT_HEIGHT * line--, "n - new game");
 	display.DrawString(start_x + LEGEND_PADDING, display.screen_height - FONT_HEIGHT * line--, "esc - quit");
+	display.DrawString(start_x + LEGEND_PADDING, display.screen_height - FONT_HEIGHT * line--, "p - pause");
 }
 
 void Game::DrawFullfilledRequirements()
@@ -215,7 +236,7 @@ void Game::DrawFullfilledRequirements()
 	int width = REQUIREMENTS_WIDTH * FONT_WIDTH;
 	int height = REQUIREMENTS_HEIGHT * FONT_HEIGHT;
 	display.DrawRectangle(start_x, start_y, width, height, display.RED, display.BLUE);
-	display.DrawString(start_x + REQUIREMENTS_PADDING, start_y + REQUIREMENTS_PADDING, "a,b,c,d,e,f,h");
+	display.DrawString(start_x + REQUIREMENTS_PADDING, start_y + REQUIREMENTS_PADDING, "a,b,c,d,e,f,h,i");
 }
 
 void::Game::DrawSprites() {

@@ -27,7 +27,7 @@ Display::Display()
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 	SDL_RenderSetLogicalSize(renderer, screen_width, screen_height);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_SetWindowTitle(window, "Szablon do zdania drugiego 2017");
+	SDL_SetWindowTitle(window, WINDOW_TITLE);
 
 	charset = SDL_LoadBMP("./cs8x8.bmp");
 	if (charset == NULL) {
