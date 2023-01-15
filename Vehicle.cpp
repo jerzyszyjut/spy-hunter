@@ -45,3 +45,25 @@ void Vehicle::Reset()
 	y = display->screen_height / 2 - surface->h / 2;
 	y_velocity_factor = DEFAULT_Y_VELOCITY_FACTOR;
 }
+
+void Vehicle::Save(FILE* file)
+{
+	fwrite(&x, sizeof(x), 1, file);
+	fwrite(&y, sizeof(y), 1, file);
+	fwrite(&x_velocity, sizeof(x_velocity), 1, file);
+	fwrite(&y_velocity, sizeof(y_velocity), 1, file);
+	fwrite(&y_velocity_factor, sizeof(y_velocity_factor), 1, file);
+	fwrite(&direction, sizeof(direction), 1, file);
+	fwrite(&acceleration, sizeof(acceleration), 1, file);
+}
+
+void Vehicle::Load(FILE* file)
+{
+	fread(&x, sizeof(x), 1, file);
+	fread(&y, sizeof(y), 1, file);
+	fread(&x_velocity, sizeof(x_velocity), 1, file);
+	fread(&y_velocity, sizeof(y_velocity), 1, file);
+	fread(&y_velocity_factor, sizeof(y_velocity_factor), 1, file);
+	fread(&direction, sizeof(direction), 1, file);
+	fread(&acceleration, sizeof(acceleration), 1, file);
+}

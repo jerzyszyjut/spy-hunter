@@ -8,13 +8,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <cstdlib>
+#include <windows.h>
+#include <stdlib.h>
 
 extern "C" {
 #include"./SDL2-2.0.10/include/SDL.h"
 #include"./SDL2-2.0.10/include/SDL_main.h"
+#include <time.h>
 }
 
-Game::Game() : display(Display()), player(Vehicle(&display)), score(0), quit(false), paused(false), keystates(SDL_GetKeyboardState(NULL))
+Game::Game() : display(Display()), player(Vehicle(&display)), score(0), quit(false), paused(false), load_menu_opened(false), save_choice(0), save_count(0), keystates(SDL_GetKeyboardState(NULL))
 {
 	for (int i = 0; i < BACKGROUND_STRIPES_COUNT; i++)
 	{
@@ -142,6 +145,7 @@ int Game::Run()
 		DrawFullfilledRequirements();
 		DrawLegend();
 		Pause(&time_delta);
+		if (load_menu_opened) DrawSavesList();
 		
 		duration += time_delta;
 		t1 = t2;
@@ -166,12 +170,38 @@ void Game::HandleInput(Vehicle* player, SDL_Event* current_event)
 		quit = true;
 	}
 
-	if (current_event->type == SDL_KEYDOWN && current_event->key.keysym.sym == SDLK_p) {
-		paused = !paused;
+	if (load_menu_opened && current_event->type == SDL_KEYDOWN) {
+		if (current_event->key.keysym.sym == SDLK_DOWN) {
+			if (save_count - 1 > save_choice) {
+				save_choice++;
+			}
+		}
+		else if (current_event->key.keysym.sym == SDLK_UP) {
+			if (save_choice > 0) {
+				save_choice--;
+			}
+		}
+		else if (current_event->key.keysym.sym == 13) {
+			Load();
+		}
 	}
 
-	if (current_event->type == SDL_KEYDOWN && current_event->key.keysym.sym == SDLK_n) {
-		NewGame();
+	if (current_event->type == SDL_KEYDOWN) {
+		switch (current_event->key.keysym.sym) {
+			case SDLK_p:
+				if (!load_menu_opened) paused = !paused;
+				break;
+			case SDLK_n:
+				NewGame();
+				break;
+			case SDLK_s:
+				Save();
+				break;
+			case SDLK_l:
+				load_menu_opened = !load_menu_opened;
+				paused = load_menu_opened;
+				break;
+		}
 	}
 	
 	if (keystates[SDL_SCANCODE_LEFT] && keystates[SDL_SCANCODE_RIGHT]) {
@@ -335,4 +365,135 @@ void Game::CheckCollisions()
 	{
 		player.x = SCREEN_WIDTH / 2 - player.surface->w / 2;
 	}
+}
+
+void Game::Save()
+{
+	time_t rawtime;
+	struct tm* timeinfo;
+
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+	char buffer[100];
+
+	sprintf(buffer, "%s/%s.txt", SAVES_DIRECTORY, asctime(timeinfo));
+	for (int i = 0; i < strlen(buffer); i++)
+	{
+		if (buffer[i] == ' ' || buffer[i] == '\n')
+		{
+			buffer[i] = '_';
+		}
+		if (buffer[i] == ':')
+		{
+			buffer[i] = '-';
+		}
+	}
+
+	FILE* file;
+	fopen_s(&file, buffer, "wb");
+	fwrite(&score, sizeof(score), 1, file);
+	fwrite(&duration, sizeof(duration), 1, file);
+	
+	player.Save(file);
+	
+	for (int i = 0; i < ROADS_COUNT; i++)
+	{
+		roads[i]->Save(file);
+	}
+
+	for (int i = 0; i < TREES_COUNT; i++)
+	{
+		trees[i]->Save(file);
+	}
+	
+	fclose(file);
+}
+
+void Game::Load()
+{
+	WIN32_FIND_DATA fdFile;
+	HANDLE hFind = NULL;
+
+	char sPath[512], temp[MAX_PATH];
+	TCHAR NPath[MAX_PATH];
+
+	GetCurrentDirectory(MAX_PATH, NPath); // Get current directory (as w_char)
+
+	wcstombs(temp, NPath, MAX_PATH); // Convert from w_char to char
+	sprintf(sPath, "%s\\%s\\*.*", temp, SAVES_DIRECTORY); // Create a string with our desired file path
+	mbstowcs(NPath, sPath, MAX_PATH); // Convert back from char to w_char
+
+	hFind = FindFirstFile(NPath, &fdFile);
+	int count = 0;
+	do
+	{
+		if (strcmp((const char*)fdFile.cFileName, ".") != 0 && strcmp((const char*)fdFile.cFileName, "..") != 0) // First to files are always . and ..
+		{
+			if (count == save_choice) {
+				char buffer[MAX_PATH];
+				wcstombs(temp, fdFile.cFileName, MAX_PATH);
+				sprintf(buffer, "%s/%s", SAVES_DIRECTORY, temp);
+				FILE* file;
+				fopen_s(&file, buffer, "rb");
+				fread(&score, sizeof(score), 1, file);
+				fread(&duration, sizeof(duration), 1, file);
+
+				player.Load(file);
+
+				for (int i = 0; i < ROADS_COUNT; i++)
+				{
+					roads[i]->Load(file);
+				}
+
+				for (int i = 0; i < TREES_COUNT; i++)
+				{
+					trees[i]->Load(file);
+				}
+
+				fclose(file);
+			}
+			load_menu_opened = false;
+			count++;
+		}
+	} while (FindNextFile(hFind, &fdFile)); // Count files
+}
+
+void Game::DrawSavesList()
+{
+	WIN32_FIND_DATA fdFile;
+	HANDLE hFind = NULL;
+
+	char sPath[512], temp[MAX_PATH];
+	TCHAR NPath[MAX_PATH];
+	
+	GetCurrentDirectory(MAX_PATH, NPath); // Get current directory (as w_char)
+
+	wcstombs(temp, NPath, MAX_PATH); // Convert from w_char to char
+	sprintf(sPath, "%s\\%s\\*.*", temp, SAVES_DIRECTORY); // Create a string with our desired file path
+	mbstowcs(NPath, sPath, MAX_PATH); // Convert back from char to w_char
+	
+	display.DrawRectangle(0, 0, display.screen_width, display.screen_height, display.RED, display.BLUE);
+
+	hFind = FindFirstFile(NPath, &fdFile);
+
+	int i = 0, offset = 0;
+	do
+	{
+		if (strcmp((const char *)fdFile.cFileName, ".") != 0
+			&& strcmp((const char*)fdFile.cFileName, "..") != 0) // First to files are always . and ..
+		{
+			wcstombs(temp, fdFile.cFileName, MAX_PATH);
+			if (save_choice == i)
+			{
+				offset = FONT_WIDTH + SAVES_LIST_PADDING * 2;
+				display.DrawString(SAVES_LIST_PADDING, SAVES_LIST_PADDING + i * (FONT_HEIGHT + SAVES_LIST_PADDING), "\20");
+			}
+			display.DrawString(offset + SAVES_LIST_PADDING, SAVES_LIST_PADDING + i * (FONT_HEIGHT + SAVES_LIST_PADDING), temp);
+			offset = 0;
+			i++;
+		}
+	} while (FindNextFile(hFind, &fdFile)); // Count files
+	save_count = i;
+		
+	FindClose(hFind);
 }

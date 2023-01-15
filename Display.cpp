@@ -37,7 +37,6 @@ Display::Display()
 
 	scrtex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, screen_width, screen_height);
 
-
 	BLACK = SDL_MapRGB(screen->format, 0, 0, 0);
 	RED = SDL_MapRGB(screen->format, 255, 0, 0);
 	GREEN = SDL_MapRGB(screen->format, 0, 255, 0);

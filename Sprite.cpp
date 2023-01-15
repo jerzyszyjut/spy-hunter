@@ -29,3 +29,15 @@ bool Sprite::Collides(Sprite* _sprite)
 	}
 	return false;
 }
+
+void Sprite::Save(FILE* file)
+{
+	fwrite(&x, sizeof(x), 1, file);
+	fwrite(&y, sizeof(y), 1, file);
+}
+
+void Sprite::Load(FILE* file)
+{
+	fread(&x, sizeof(x), 1, file);
+	fread(&y, sizeof(y), 1, file);
+}

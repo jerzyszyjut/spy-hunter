@@ -34,5 +34,7 @@ class Vehicle: public Sprite
 		Vehicle(Display*);
 		void HandleMovement(double);
 		void Reset();
+		void Save(FILE*);
+		void Load(FILE*);
 };
 

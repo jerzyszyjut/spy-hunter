@@ -56,3 +56,19 @@ void Road::ChangeSize(Road* next_road)
 		width = next_road->width;
 	}
 }
+
+void Road::Save(FILE* file)
+{
+	fwrite(&x, sizeof(x), 1, file);
+	fwrite(&y, sizeof(y), 1, file);
+	fwrite(&width, sizeof(width), 1, file);
+	fwrite(&height, sizeof(height), 1, file);
+}
+
+void Road::Load(FILE* file)
+{
+	fread(&x, sizeof(x), 1, file);
+	fread(&y, sizeof(y), 1, file);
+	fread(&width, sizeof(width), 1, file);
+	fread(&height, sizeof(height), 1, file);
+}

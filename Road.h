@@ -15,5 +15,7 @@ class Road : public Sprite
 		Road(Display*, int, int);
 		void Draw();
 		void ChangeSize(Road*);
+		void Save(FILE*);
+		void Load(FILE*);
 };
 

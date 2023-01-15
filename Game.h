@@ -35,6 +35,9 @@ extern "C" {
 #define DEFAULT_TREE_POSITION_X 75
 #define TREES_COUNT 6
 
+#define SAVES_LIST_PADDING 4
+#define SAVES_DIRECTORY "saves"
+
 class Game
 {
 	public:
@@ -47,7 +50,8 @@ class Game
 		Vehicle player;
 		const Uint8* keystates;
 		double duration, score;
-		bool quit, paused;
+		bool quit, paused, load_menu_opened;
+		int save_choice, save_count;
 
 		Game();
 		virtual ~Game();
@@ -64,6 +68,7 @@ class Game
 		void CountPoints(double);
 		bool CheckCollision(Sprite**, int);
 		void CheckCollisions();
+		void Save();
+		void Load();
+		void DrawSavesList();
 };
-
-

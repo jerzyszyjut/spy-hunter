@@ -5,6 +5,7 @@
 extern "C" {
 #include"./SDL2-2.0.10/include/SDL.h"
 #include"./SDL2-2.0.10/include/SDL_main.h"
+#include <cstdio>
 }
 
 class Sprite
@@ -17,6 +18,8 @@ class Sprite
 		Sprite(Display*, double, double, char*);
 		~Sprite();
 		void Draw();
+		void Save(FILE*);
+		void Load(FILE*);
 		bool Collides(Sprite*);
 };
 
