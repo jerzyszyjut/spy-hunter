@@ -23,22 +23,18 @@ Game::Game() : display(Display()), player(Vehicle(&display)), score(0), quit(fal
 	{
 		background_sprites[i] = NULL;
 	}
-	
 	for (int i = 0; i < ROADS_COUNT; i++)
 	{
 		roads[i] = NULL;
 	}
-
 	for (int i = 0; i < ROADS_COUNT * 2; i++)
 	{
 		roadsides[i] = NULL;
 	}
-
 	for (int i = 0; i < TREES_COUNT; i++)
 	{
 		trees[i] = NULL;
 	}
-	
 	NewGame();
 }
 
@@ -56,7 +52,6 @@ void Game::DeleteSprites()
 			delete background_sprites[i];
 		}
 	}
-
 	for (int i = 0; i < ROADS_COUNT; i++)
 	{
 		if (roads[i] != NULL)
@@ -64,7 +59,6 @@ void Game::DeleteSprites()
 			delete roads[i];
 		}
 	}
-
 	for (int i = 0; i < ROADS_COUNT * 2; i++)
 	{
 		if (roadsides[i] != NULL)
@@ -72,7 +66,6 @@ void Game::DeleteSprites()
 			delete roadsides[i];
 		}
 	}
-
 	for (int i = 0; i < TREES_COUNT; i++)
 	{
 		if (trees[i] != NULL)
@@ -143,9 +136,9 @@ int Game::Run()
 		DrawSprites();
 		DrawScoreboard();
 		DrawFullfilledRequirements();
-		DrawLegend();
 		Pause(&time_delta);
 		if (load_menu_opened) DrawSavesList();
+		DrawLegend();
 		
 		duration += time_delta;
 		t1 = t2;
@@ -170,24 +163,28 @@ void Game::HandleInput(Vehicle* player, SDL_Event* current_event)
 		quit = true;
 	}
 
-	if (load_menu_opened && current_event->type == SDL_KEYDOWN) {
-		if (current_event->key.keysym.sym == SDLK_DOWN) {
-			if (save_count - 1 > save_choice) {
-				save_choice++;
-			}
-		}
-		else if (current_event->key.keysym.sym == SDLK_UP) {
-			if (save_choice > 0) {
-				save_choice--;
-			}
-		}
-		else if (current_event->key.keysym.sym == 13) {
-			Load();
-		}
-	}
-
 	if (current_event->type == SDL_KEYDOWN) {
-		switch (current_event->key.keysym.sym) {
+		if (load_menu_opened) {
+			if (current_event->key.keysym.sym == SDLK_DOWN) {
+				if (save_count - 1 > save_choice) {
+					save_choice++;
+				}
+			}
+			else if (current_event->key.keysym.sym == SDLK_UP) {
+				if (save_choice > 0) {
+					save_choice--;
+				}
+			}
+			else if (current_event->key.keysym.sym == ENTER_KEY) {
+				Load();
+			}
+			else if (current_event->key.keysym.sym == SDLK_l) {
+				load_menu_opened = !load_menu_opened;
+				paused = load_menu_opened;
+			}
+		}
+		else {
+			switch (current_event->key.keysym.sym) {
 			case SDLK_p:
 				if (!load_menu_opened) paused = !paused;
 				break;
@@ -201,6 +198,7 @@ void Game::HandleInput(Vehicle* player, SDL_Event* current_event)
 				load_menu_opened = !load_menu_opened;
 				paused = load_menu_opened;
 				break;
+			}
 		}
 	}
 	
@@ -257,6 +255,9 @@ void Game::DrawLegend()
 	display.DrawString(start_x + LEGEND_PADDING, display.screen_height - FONT_HEIGHT * line--, "n - new game");
 	display.DrawString(start_x + LEGEND_PADDING, display.screen_height - FONT_HEIGHT * line--, "esc - quit");
 	display.DrawString(start_x + LEGEND_PADDING, display.screen_height - FONT_HEIGHT * line--, "p - pause");
+	display.DrawString(start_x + LEGEND_PADDING, display.screen_height - FONT_HEIGHT * line--, "s - save game");
+	display.DrawString(start_x + LEGEND_PADDING, display.screen_height - FONT_HEIGHT * line--, "l - open/close saves");
+	display.DrawString(start_x + LEGEND_PADDING, display.screen_height - FONT_HEIGHT * line--, "enter - choose save");
 }
 
 void Game::DrawFullfilledRequirements()
@@ -266,7 +267,7 @@ void Game::DrawFullfilledRequirements()
 	int width = REQUIREMENTS_WIDTH * FONT_WIDTH;
 	int height = REQUIREMENTS_HEIGHT * FONT_HEIGHT;
 	display.DrawRectangle(start_x, start_y, width, height, display.RED, display.BLUE);
-	display.DrawString(start_x + REQUIREMENTS_PADDING, start_y + REQUIREMENTS_PADDING, "a,b,c,d,e,f,h,i");
+	display.DrawString(start_x + REQUIREMENTS_PADDING, start_y + REQUIREMENTS_PADDING, "a,b,c,d,e,f,g,h,i");
 }
 
 void::Game::DrawSprites() {
@@ -393,19 +394,15 @@ void Game::Save()
 	fopen_s(&file, buffer, "wb");
 	fwrite(&score, sizeof(score), 1, file);
 	fwrite(&duration, sizeof(duration), 1, file);
-	
 	player.Save(file);
-	
 	for (int i = 0; i < ROADS_COUNT; i++)
 	{
 		roads[i]->Save(file);
 	}
-
 	for (int i = 0; i < TREES_COUNT; i++)
 	{
 		trees[i]->Save(file);
 	}
-	
 	fclose(file);
 }
 

@@ -9,8 +9,8 @@ extern "C" {
 #include"./SDL2-2.0.10/include/SDL_main.h"
 }
 
-#define BACKGROUND_STRIPES_COUNT 8
-#define BACKGROUND_STRIPES_HEIGHT 90
+#define BACKGROUND_STRIPES_COUNT 15
+#define BACKGROUND_STRIPES_HEIGHT 40
 #define BACKGROUND_STRIPE_OFFSET 5
 
 #define ROADS_COUNT 12
@@ -22,7 +22,7 @@ extern "C" {
 #define SCOREBOARD_HEIGHT 4
 
 #define LEGEND_WIDTH 20
-#define LEGEND_HEIGHT 7
+#define LEGEND_HEIGHT 10
 #define LEGEND_PADDING 4
 
 #define REQUIREMENTS_WIDTH 20
@@ -37,6 +37,8 @@ extern "C" {
 
 #define SAVES_LIST_PADDING 4
 #define SAVES_DIRECTORY "saves"
+
+#define ENTER_KEY 13
 
 class Game
 {
