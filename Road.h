@@ -13,7 +13,6 @@ class Road : public Sprite
 		int width, height;
 
 		Road(Display*, int, int);
-		~Road();
 		void Draw();
 		void ChangeSize(Road*);
 };

@@ -44,24 +44,55 @@ Game::Game() : display(Display()), player(Vehicle(&display)), score(0)
 
 Game::~Game()
 {
+	DeleteSprites();
+}
+
+void Game::DeleteSprites()
+{
+	for (int i = 0; i < BACKGROUND_STRIPES_COUNT; i++)
+	{
+		if (background_sprites[i] != NULL)
+		{
+			delete background_sprites[i];
+		}
+	}
+
+	for (int i = 0; i < ROADS_COUNT; i++)
+	{
+		if (roads[i] != NULL)
+		{
+			delete roads[i];
+		}
+	}
+
+	for (int i = 0; i < ROADS_COUNT * 2; i++)
+	{
+		if (roadsides[i] != NULL)
+		{
+			delete roadsides[i];
+		}
+	}
+
+	for (int i = 0; i < TREES_COUNT; i++)
+	{
+		if (trees[i] != NULL)
+		{
+			delete trees[i];
+		}
+	}
 }
 
 void Game::NewGame()
 {
+	DeleteSprites();
 
 	for (int i = 0; i < BACKGROUND_STRIPES_COUNT; i++)
 	{
-		if (background_sprites[i] != NULL) {
-			SDL_FreeSurface(background_sprites[i]->surface);
-		}
 		background_sprites[i] = new Sprite(&display, 0, i * BACKGROUND_STRIPES_HEIGHT, "./background_stripe.bmp");
 	}
 	
 	for (int i = 0; i < ROADS_COUNT; i++)
 	{
-		if (roads[i] != NULL) {
-			SDL_FreeSurface(roads[i]->surface);
-		}
 		roads[i] = new Road(&display, DEFAULT_ROAD_WIDTH, display.screen->h);
 		roads[i]->x = 0;
 		roads[i]->y = i * roads[i]->height;
@@ -71,9 +102,6 @@ void Game::NewGame()
 
 	for (int i = 0; i < TREES_COUNT; i++)
 	{
-		if (trees[i] != NULL) {
-			SDL_FreeSurface(trees[i]->surface);
-		}
 		if (i % 2 == 0) {
 			trees[i] = new Sprite(&display, DEFAULT_TREE_POSITION_X, i * display.screen->h / TREES_COUNT, "./tree.bmp");
 		}
@@ -84,7 +112,6 @@ void Game::NewGame()
 
 	duration = 0;
 	score = 0;
-	player = Vehicle(&display);
 }
 
 int Game::Run()
@@ -100,10 +127,6 @@ int Game::Run()
 
 		while (SDL_PollEvent(&current_event)) {
 			HandleInput(&player, &current_event);
-
-			if (current_event.type == SDL_KEYDOWN && current_event.key.keysym.sym == SDLK_n) {
-				NewGame();
-			}
 		};
 		player.HandleMovement(time_delta);
 		
@@ -125,6 +148,10 @@ void Game::HandleInput(Vehicle* player, SDL_Event* current_event)
 {
 	if (current_event->type == SDL_QUIT || current_event->key.keysym.sym == SDLK_ESCAPE) {
 		quit = true;
+	}
+
+	if (current_event->type == SDL_KEYDOWN && current_event->key.keysym.sym == SDLK_n) {
+		NewGame();
 	}
 	
 	if (keystates[SDL_SCANCODE_LEFT] && keystates[SDL_SCANCODE_RIGHT]) {

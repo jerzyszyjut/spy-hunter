@@ -14,10 +14,6 @@ Road::Road(Display* display, int width, int height) : Sprite(display, 0, 0, "roa
 	}
 }
 
-Road::~Road()
-{
-}
-
 void Road::Draw()
 {
 	surface->w = width;

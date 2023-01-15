@@ -42,6 +42,7 @@ class Game
 		
 		Game();
 		virtual ~Game();
+		void DeleteSprites();
 		int Run();
 		void HandleInput(Vehicle*, SDL_Event*);
 		void DrawScoreboard();

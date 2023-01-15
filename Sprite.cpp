@@ -10,6 +10,7 @@ Sprite::Sprite(Display* _display, double _x, double _y, char* _bmp_path) : displ
 
 Sprite::~Sprite()
 {
+	SDL_FreeSurface(surface);
 }
 
 void Sprite::Draw()
